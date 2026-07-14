@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="multi-warehouse-inventory-system-api/multi-warehouse-inventory-system-api.csproj" />
+  <Project Path="MultiWarehouse.API/MultiWarehouse.API.csproj" />
   <Project Path="MultiWarehouse.Entity/MultiWarehouse.Entity.csproj" />
   <Project Path="MultiWarehouse.Service/MultiWarehouse.Service.csproj" />
   <Project Path="MultiWarehouse.Shared/MultiWarehouse.Shared.csproj" />

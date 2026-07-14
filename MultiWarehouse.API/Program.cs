@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using multi_warehouse_inventory_system_api.Middlewares;
+using MultiWarehouse.API.Middlewares;
 using MultiWarehouse.Service.Context;
 using MultiWarehouse.Service.Repositories.Implementations;
 using MultiWarehouse.Service.Repositories.Interfaces;

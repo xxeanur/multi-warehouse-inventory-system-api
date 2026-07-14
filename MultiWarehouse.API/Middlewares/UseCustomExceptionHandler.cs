@@ -3,7 +3,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Shared.DTOs;
 using System.Text.Json;
 
-namespace multi_warehouse_inventory_system_api.Middlewares
+namespace MultiWarehouse.API.Middlewares
 {
     // Extension (Genişletme) metodu yazabilmek için sınıfın 'static' olması zorunludur.
     public static class UseCustomExceptionHandler

@@ -1,0 +1,6 @@
+@MultiWarehouse.API_HostAddress = http://localhost:5152
+
+GET {{MultiWarehouse.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

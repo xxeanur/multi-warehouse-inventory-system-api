@@ -4,7 +4,7 @@ using MultiWarehouse.Shared.DTOs; // CustomResponseDto için gerekli
 using MultiWarehouse.Shared.DTOs.AuthDtos;
 using System.Threading.Tasks;
 
-namespace multi_warehouse_inventory_system_api.Controllers
+namespace MultiWarehouse.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
