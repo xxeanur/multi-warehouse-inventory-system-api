@@ -11,8 +11,6 @@ namespace MultiWarehouse.Entity.Entities
     /// Sistemi kullanacak personelleri ve yöneticileri temsil eder.
     /// Sisteme giriş (Login) ve yetkilendirme (Authorization) süreçlerinin merkezidir.
     /// </summary>
-    // public class diyerek diğer katmanların (Service, API) bu sınıfa erişmesine izin veriyoruz.
-    // BaseEntity'den miras alarak Id, CreatedDate, IsActive gibi ortak özellikleri otomatik dahil ediyoruz.
     public class User : BaseEntity
     {
         // Kullanıcının sistemde görünecek gerçek adını tutarız.

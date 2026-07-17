@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MultiWarehouse.Entity\MultiWarehouse.Entity.csproj" />
+  </ItemGroup>
+
 </Project>

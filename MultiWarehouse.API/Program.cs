@@ -1,18 +1,32 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MultiWarehouse.API.Middlewares;
 using MultiWarehouse.Service.Context;
 using MultiWarehouse.Service.Repositories.Implementations;
 using MultiWarehouse.Service.Repositories.Interfaces;
+using MultiWarehouse.Service.Services.Implementations;
+using MultiWarehouse.Service.Services.Interfaces;
 using System.IO;
 using System.Reflection;
-using MultiWarehouse.Service.Services.Interfaces;
-using MultiWarehouse.Service.Services.Implementations;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =========================================================
+// 1. FRAMEWORK AYARLARI
+// =========================================================
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+// =========================================================
+// 2. VERİTABANI VE KONFİGÜRASYON (OPTIONS) AYARLARI
+// =========================================================
+// PostgreSQL Veritabanı Bağlantısı (DbContext) Ayarı
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // OPTIONS PATTERN UYGULAMASI:
 // "TokenOptions" adındaki JSON bloğunu okur ve CustomTokenOption sınıfına doldurur.
@@ -20,15 +34,36 @@ builder.Services.AddControllers();
 builder.Services.Configure<MultiWarehouse.Shared.Configurations.CustomTokenOption>(
     builder.Configuration.GetSection("TokenOptions")
 );
-// PostgreSQL Veritabanı Bağlantısı (DbContext) Ayarı
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//servisler
+// =========================================================
+// 3. BAĞIMLILIK ENJEKSİYONU (DEPENDENCY INJECTION)
+// =========================================================
+// Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Services
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<IWarehouseZoneService, WarehouseZoneService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IShelfService, ShelfService>();
+builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<IStockMovementService, StockMovementService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+// =========================================================
+// 4. SWAGGER VE GÜVENLİK (API DOKÜMANTASYONU)
+// =========================================================
 // Swagger Configuration (XML Docs + JWT Auth Support)
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     // 1. XML Dokümantasyonunu Bağlama
@@ -63,13 +98,35 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+// Token ayarlarını appsettings.json'dan çekiyoruz
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<MultiWarehouse.Shared.Configurations.CustomTokenOption>();
 
+// JWT Doğrulama Kuralları
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = tokenOptions.Issuer,
+        ValidAudience = tokenOptions.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
+
+        ValidateIssuerSigningKey = true, // Şifreyi doğrula
+        ValidateAudience = true,         // Audience doğrula
+        ValidateIssuer = true,           // Issuer doğrula
+        ValidateLifetime = true,         // Süreyi kontrol et
+        ClockSkew = TimeSpan.Zero        // Süre bitiminde ekstra 5dk tolerans verme, anında kes
+    };
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =========================================================
+// 5. HTTP İSTEK HATTI (PIPELINE / MIDDLEWARES)
+// =========================================================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

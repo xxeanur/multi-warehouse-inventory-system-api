@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MultiWarehouse.Service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260713122045_InitialCreate")]
+    [Migration("20260716154548_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -309,9 +309,8 @@ namespace MultiWarehouse.Service.Migrations
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unit")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric");
@@ -631,15 +630,15 @@ namespace MultiWarehouse.Service.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5ae7d32a-9f42-48ba-8779-8d8e1ecf5881"),
+                            Id = new Guid("f8006d37-c69a-4ae7-87b8-588556a9e174"),
                             AvatarUrl = "",
-                            CreatedDate = new DateTime(2026, 7, 13, 12, 20, 44, 359, DateTimeKind.Utc).AddTicks(3083),
-                            Email = "admin@depo.com",
+                            CreatedDate = new DateTime(2026, 7, 16, 15, 45, 47, 698, DateTimeKind.Utc).AddTicks(6494),
+                            Email = "string",
                             EmailConfirmed = false,
                             FirstName = "System",
                             IsActive = true,
                             LastName = "Admin",
-                            PasswordHash = "hashed_123456_demo_string",
+                            PasswordHash = "string",
                             Phone = "",
                             Role = 0
                         });

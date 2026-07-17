@@ -306,9 +306,8 @@ namespace MultiWarehouse.Service.Migrations
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Unit")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric");
@@ -628,9 +627,9 @@ namespace MultiWarehouse.Service.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6dd6622b-464b-4ac0-9c9a-e584cb25a3bd"),
+                            Id = new Guid("f8006d37-c69a-4ae7-87b8-588556a9e174"),
                             AvatarUrl = "",
-                            CreatedDate = new DateTime(2026, 7, 14, 14, 28, 8, 215, DateTimeKind.Utc).AddTicks(4272),
+                            CreatedDate = new DateTime(2026, 7, 16, 15, 45, 47, 698, DateTimeKind.Utc).AddTicks(6494),
                             Email = "string",
                             EmailConfirmed = false,
                             FirstName = "System",

@@ -85,7 +85,7 @@ namespace MultiWarehouse.Service.Migrations
                     Depth = table.Column<double>(type: "double precision", nullable: false),
                     Weight = table.Column<double>(type: "double precision", nullable: false),
                     Barcode = table.Column<string>(type: "text", nullable: false),
-                    Unit = table.Column<string>(type: "text", nullable: false),
+                    Unit = table.Column<int>(type: "integer", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     CostPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     CriticalLevel = table.Column<int>(type: "integer", nullable: false),
@@ -439,7 +439,7 @@ namespace MultiWarehouse.Service.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "AvatarUrl", "CreatedDate", "Email", "EmailConfirmed", "FirstName", "IsActive", "LastLoginDate", "LastName", "PasswordHash", "Phone", "Role", "UpdatedDate" },
-                values: new object[] { new Guid("5ae7d32a-9f42-48ba-8779-8d8e1ecf5881"), "", new DateTime(2026, 7, 13, 12, 20, 44, 359, DateTimeKind.Utc).AddTicks(3083), "admin@depo.com", false, "System", true, null, "Admin", "hashed_123456_demo_string", "", 0, null });
+                values: new object[] { new Guid("f8006d37-c69a-4ae7-87b8-588556a9e174"), "", new DateTime(2026, 7, 16, 15, 45, 47, 698, DateTimeKind.Utc).AddTicks(6494), "string", false, "System", true, null, "Admin", "string", "", 0, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditLogs_UserId",

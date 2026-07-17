@@ -17,15 +17,18 @@ namespace MultiWarehouse.Service.Services.Implementations
         // Kullanılacak araçları tanımlıyoruz. Sadece kurucu metotta (constructor) değer atanabilmesi ve 
         // sonradan yanlışlıkla değiştirilip sistemin bozulmaması için 'readonly' kullanıyoruz.
         private readonly IGenericRepository<User> _userRepository;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly ITokenService _tokenService;
         private readonly AppDbContext _context;
 
-        public AuthService(IGenericRepository<User> userRepository, ITokenService tokenService, AppDbContext context)
+        public AuthService(IGenericRepository<User> userRepository, IRefreshTokenRepository refreshTokenRepository, ITokenService tokenService, AppDbContext context)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             _context = context;
+            _refreshTokenRepository = refreshTokenRepository;
         }
+
 
         public async Task<TokenDto> LoginAsync(LoginDto loginDto)
         {
@@ -80,5 +83,33 @@ namespace MultiWarehouse.Service.Services.Implementations
             // Controller da bunu CustomResponseDto içine sarıp Next.js'e 200 OK ile yollayacak.
             return tokenDto;
         }
+
+        public async Task<TokenDto> CreateTokenByRefreshTokenAsync(string refreshToken)
+        {
+            // 1. TERTEMİZ KULLANIM: Servis katmanı Include nedir, DbContext nedir bilmez.
+            // Sadece Repository'e emir verir: "Bana token'ı kullanıcısıyla getir!"
+            var existRefreshToken = await _refreshTokenRepository.GetByTokenWithUserAsync(refreshToken);
+
+            if (existRefreshToken == null)
+            {
+                throw new ClientSideException("Refresh token bulunamadı.");
+            }
+
+            if (existRefreshToken.Expires < DateTime.UtcNow || existRefreshToken.IsRevoked)
+            {
+                throw new ClientSideException("Refresh token süresi dolmuş veya iptal edilmiş. Lütfen tekrar giriş yapın.");
+            }
+
+            var tokenDto = _tokenService.CreateToken(existRefreshToken.User);
+
+            existRefreshToken.Token = tokenDto.RefreshToken;
+            existRefreshToken.Expires = tokenDto.RefreshTokenExpiration;
+
+            await _context.SaveChangesAsync();
+
+            return tokenDto;
+        }
+
+
     }
 }

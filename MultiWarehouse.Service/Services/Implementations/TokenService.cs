@@ -22,18 +22,19 @@ namespace MultiWarehouse.Service.Services.Implementations
 
         public TokenDto CreateToken(User user)
         {
-            // StoryVibee'deki zengin claim yapısını yeni mimariye uyarladık
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Token'a özel eşsiz ID
-                
-                // Not: User entity'nde bu alanlar varsa açabilirsin
-                // new Claim(ClaimTypes.Name, user.FirstName),
-                // new Claim(ClaimTypes.Surname, user.LastName),
-                // new Claim(ClaimTypes.Role, user.Role)
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
+        
+        // Yorum satırlarını kaldırdık ve projendeki Entity alanlarına göre aktif ettik.
+        new Claim(ClaimTypes.Name, user.FirstName),
+        new Claim(ClaimTypes.Surname, user.LastName),
+        
+        // EN KRİTİK NOKTA: Role enum olduğu için .ToString() ile metne çevirmek zorundayız.
+        new Claim(ClaimTypes.Role, user.Role.ToString())
+    };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenOption.SecurityKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -43,7 +44,7 @@ namespace MultiWarehouse.Service.Services.Implementations
                 issuer: _tokenOption.Issuer,
                 audience: _tokenOption.Audience,
                 expires: expiration,
-                notBefore: DateTime.UtcNow, 
+                notBefore: DateTime.UtcNow,
                 claims: claims,
                 signingCredentials: credentials
             );
@@ -58,7 +59,6 @@ namespace MultiWarehouse.Service.Services.Implementations
                 RefreshTokenExpiration = DateTime.UtcNow.AddDays(_tokenOption.RefreshTokenExpiration)
             };
         }
-
 
 
         private string GenerateRefreshToken()

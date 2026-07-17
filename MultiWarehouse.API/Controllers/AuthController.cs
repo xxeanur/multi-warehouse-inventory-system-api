@@ -33,5 +33,21 @@ namespace MultiWarehouse.API.Controllers
             // 2. Senin dediğin gibi tam burada, API'nin çıkış noktasında pakete sar ve gönder!
             return Ok(CustomResponseDto<TokenDto>.SuccessResponse(tokenDto));
         }
+
+        /// <summary>
+        /// Süresi dolan Access Token'ı, geçerli bir Refresh Token kullanarak yeniler.
+        /// Kullanıcıdan tekrar şifre istemeden oturumun kesintisiz devam etmesini sağlar.
+        /// </summary>
+        /// <param name="refreshTokenDto">Kullanıcının elindeki mevcut Refresh Token verisi</param>
+        /// <returns>Yepyeni bir Access Token ve Refresh Token paketi döner.</returns>
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> CreateTokenByRefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
+        {
+            // 1. DTO içindeki token metnini alıp servise gönderiyoruz.
+            var tokenDto = await _authService.CreateTokenByRefreshTokenAsync(refreshTokenDto.Token);
+
+            // 2. Başarılıysa, 200 OK statü koduyla yeni token paketimizi standart response modelimize sarıp dönüyoruz.
+            return Ok(CustomResponseDto<TokenDto>.SuccessResponse(tokenDto));
+        }
     }
 }

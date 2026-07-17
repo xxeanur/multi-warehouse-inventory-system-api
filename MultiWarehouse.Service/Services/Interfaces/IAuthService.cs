@@ -7,5 +7,8 @@ namespace MultiWarehouse.Service.Services.Interfaces
     {
         // Artık sadece saf TokenDto dönüyor.
         Task<TokenDto> LoginAsync(LoginDto loginDto);
+
+        //refresh token isteme.
+        Task<TokenDto> CreateTokenByRefreshTokenAsync(string refreshToken);
     }
 }

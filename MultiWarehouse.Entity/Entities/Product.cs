@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultiWarehouse.Entity.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,11 +26,14 @@ namespace MultiWarehouse.Entity.Entities
         public double Depth { get; set; }  // Derinlik
         public double Weight { get; set; } // Ağırlık
 
+        // Ürünün Toplam Hacmi (Genişlik x Yükseklik x Derinlik) - Sadece okunabilir (Read-Only)
+        public double Volume => Width * Height * Depth;
+
         // Ürünün fiziksel barkod numarası (El terminalleri ve barkod okuyucular için)
         public string Barcode { get; set; } = string.Empty;
 
         // Ürünün sayım veya satış birimi (Örn: "Adet", "Kg", "Litre", "Koli")
-        public string Unit { get; set; } = "Adet";
+        public UnitType Unit { get; set; } = UnitType.Piece;
 
         // Ürünün birim maliyeti/fiyatı (Parasal işlemler için hassasiyet kaybı yaşatmayan 'decimal' kullanılır)
         public decimal UnitPrice { get; set; }
