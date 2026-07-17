@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.AuditLogDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -63,6 +61,39 @@ namespace MultiWarehouse.API.Controllers
         {
             var logs = await _auditLogService.GetAllByTableNameAsync(tableName);
             return Ok(CustomResponseDto<IEnumerable<AuditLogDto>>.SuccessResponse(logs));
+        }
+
+        /// <summary>
+        /// Tüm sistem loglarını sayfalama destekli olarak getirir.
+        /// Örnek: GET /api/AuditLogs/Paged?pageNumber=1&pageSize=50
+        /// </summary>
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        {
+            var pagedLogs = await _auditLogService.GetPagedAsync(paginationParams);
+            return Ok(CustomResponseDto<PagedResult<AuditLogDto>>.SuccessResponse(pagedLogs));
+        }
+
+        /// <summary>
+        /// Belirli bir kullanıcının işlem geçmişini sayfalayarak getirir.
+        /// Örnek: GET /api/AuditLogs/PagedByUser/12345-abcde...?pageNumber=1&pageSize=50
+        /// </summary>
+        [HttpGet("PagedByUser/{userId}")]
+        public async Task<IActionResult> GetPagedByUser([FromQuery] PaginationParams paginationParams, Guid userId)
+        {
+            var pagedLogs = await _auditLogService.GetPagedByUserIdAsync(paginationParams, userId);
+            return Ok(CustomResponseDto<PagedResult<AuditLogDto>>.SuccessResponse(pagedLogs));
+        }
+
+        /// <summary>
+        /// Belirli bir tablo üzerinde yapılan değişiklikleri sayfalayarak getirir.
+        /// Örnek: GET /api/AuditLogs/PagedByTable/Products?pageNumber=1&pageSize=50
+        /// </summary>
+        [HttpGet("PagedByTable/{tableName}")]
+        public async Task<IActionResult> GetPagedByTable([FromQuery] PaginationParams paginationParams, string tableName)
+        {
+            var pagedLogs = await _auditLogService.GetPagedByTableNameAsync(paginationParams, tableName);
+            return Ok(CustomResponseDto<PagedResult<AuditLogDto>>.SuccessResponse(pagedLogs));
         }
     }
 }

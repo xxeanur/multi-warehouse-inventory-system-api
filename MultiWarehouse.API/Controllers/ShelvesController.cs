@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.ShelfDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -59,6 +57,28 @@ namespace MultiWarehouse.API.Controllers
         {
             var shelves = await _shelfService.GetAllByZoneIdAsync(zoneId);
             return Ok(CustomResponseDto<IEnumerable<ShelfDto>>.SuccessResponse(shelves));
+        }
+
+        /// <summary>
+        /// Sistemdeki tüm rafları pagination olarak getirir.
+        /// Örnek: GET /api/Shelves/Paged?pageNumber=1&pageSize=20
+        /// </summary>
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        {
+            var pagedShelves = await _shelfService.GetPagedAsync(paginationParams);
+            return Ok(CustomResponseDto<PagedResult<ShelfDto>>.SuccessResponse(pagedShelves));
+        }
+
+        /// <summary>
+        /// Sadece belirtilen Zone ID'sine ait rafları sayfalayarak getirir.
+        /// Örnek: GET /api/Shelves/PagedByZone/12345-abcde...?pageNumber=1&pageSize=20
+        /// </summary>
+        [HttpGet("PagedByZone/{zoneId}")]
+        public async Task<IActionResult> GetPagedByZone([FromQuery] PaginationParams paginationParams, Guid zoneId)
+        {
+            var pagedShelves = await _shelfService.GetPagedByZoneIdAsync(paginationParams, zoneId);
+            return Ok(CustomResponseDto<PagedResult<ShelfDto>>.SuccessResponse(pagedShelves));
         }
 
         /// <summary>

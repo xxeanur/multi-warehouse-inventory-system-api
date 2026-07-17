@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MultiWarehouse.Service.Context;
 using MultiWarehouse.Service.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MultiWarehouse.Shared.Pagination;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.Service.Repositories.Implementations
 {
@@ -89,6 +85,36 @@ namespace MultiWarehouse.Service.Repositories.Implementations
         {
             // Asıl işlem (SQL'e yansıma), servis katmanında tüm işler bitip "await _context.SaveChangesAsync()" çağrıldığında gerçekleşir.
             _dbSet.Remove(entity);
+        }
+
+        public async Task<PagedResult<T>> GetPagedAsync(PaginationParams paginationParams, Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IQueryable<T>>? include = null)
+        {
+            // 1. AsNoTracking ile performansı artırıyoruz (Çünkü veriyi sadece okuyup sayfalayacağız).
+            IQueryable<T> query = _dbSet.AsNoTracking();//takip yapma, veriyi çekme sorguyu oluştur IQeryable
+
+            // 2. Eğer filtre (Örn: IsActive == true) gönderilmişse sorguya ekle.
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            // 3. Eğer ilişkili tablo (Örn: Include(x => x.Category)) gönderilmişse sorguya ekle.
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            // 4. Toplam kayıt sayısını veritabanından çek.
+            var count = await query.CountAsync();
+
+            // 5. EF Core ile Sayfalama (Skip & Take) işlemini uygula.
+            var items = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            // 6. Sonucu Ortak PagedResult sınıfına sarıp döndür.
+            return new PagedResult<T>(items, count, paginationParams.PageNumber, paginationParams.PageSize);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using MultiWarehouse.Shared.DTOs.ProductDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Interfaces
 {
@@ -10,6 +8,9 @@ namespace MultiWarehouse.Service.Services.Interfaces
         Task<ProductDto> CreateAsync(ProductCreateDto createDto);
         Task<ProductDto> GetByIdAsync(Guid id);
         Task<IEnumerable<ProductDto>> GetAllAsync();
+
+        //pagination
+        Task<PagedResult<ProductDto>> GetPagedAsync(PaginationParams paginationParams);
 
         /// <summary>
         /// Belirli bir kategoriye ait ürünleri listeler.

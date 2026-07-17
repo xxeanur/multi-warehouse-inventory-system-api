@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultiWarehouse.Shared.Pagination;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,5 +23,10 @@ namespace MultiWarehouse.Service.Repositories.Interfaces
         void Update(T entity);
 
         void Remove(T entity);
+
+        Task<PagedResult<T>> GetPagedAsync(
+            PaginationParams paginationParams,
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IQueryable<T>>? include = null);
     }
 }

@@ -1,8 +1,6 @@
 ﻿// MultiWarehouse.Service/Services/Interfaces/IAuditLogService.cs
 using MultiWarehouse.Shared.DTOs.AuditLogDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Interfaces
 {
@@ -21,5 +19,15 @@ namespace MultiWarehouse.Service.Services.Interfaces
 
         /// <summary>Belirli bir tablo (Örn: Products) üzerinde yapılan tüm işlemleri listeler.</summary>
         Task<IEnumerable<AuditLogDto>> GetAllByTableNameAsync(string tableName);
+
+        // Tüm logları sayfalar
+        Task<PagedResult<AuditLogDto>> GetPagedAsync(PaginationParams paginationParams);
+
+        //pagination
+        // Belirli bir kullanıcının yaptığı işlemleri sayfalar
+        Task<PagedResult<AuditLogDto>> GetPagedByUserIdAsync(PaginationParams paginationParams, Guid userId);
+
+        // Sadece belirli bir tabloda (Örn: "Products") yapılan işlemleri sayfalar
+        Task<PagedResult<AuditLogDto>> GetPagedByTableNameAsync(PaginationParams paginationParams, string tableName);
     }
 }

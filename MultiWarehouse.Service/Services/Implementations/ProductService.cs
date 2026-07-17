@@ -6,10 +6,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.ProductDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -85,6 +82,21 @@ namespace MultiWarehouse.Service.Services.Implementations
         {
             var products = await _productRepository.Where(p => p.IsActive).ToListAsync();
             return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
+
+        // =================================================================
+        // YENİ EKLENEN SENIOR SAYFALAMA METODU
+        // =================================================================
+        public async Task<PagedResult<ProductDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            // 1. Generic Repository'deki IQueryable sayfalama gücünü kullan
+            var pagedEntities = await _productRepository.GetPagedAsync(
+                paginationParams,
+                filter: p => p.IsActive
+            );
+
+            // 2. AutoMapper'ın Open Generics yeteneği ile tek satırda dönüştür ve yolla!
+            return _mapper.Map<PagedResult<ProductDto>>(pagedEntities);
         }
 
         public async Task<IEnumerable<ProductDto>> GetAllByCategoryIdAsync(Guid categoryId)

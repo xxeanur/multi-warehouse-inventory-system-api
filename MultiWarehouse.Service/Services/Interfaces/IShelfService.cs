@@ -1,7 +1,5 @@
 ﻿using MultiWarehouse.Shared.DTOs.ShelfDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Interfaces
 {
@@ -15,6 +13,13 @@ namespace MultiWarehouse.Service.Services.Interfaces
         /// Belirli bir depo bloğuna (Zone) ait tüm rafları getirir.
         /// </summary>
         Task<IEnumerable<ShelfDto>> GetAllByZoneIdAsync(Guid zoneId);
+
+        //pagination
+        // Tüm rafları sayfalayarak getirir
+        Task<PagedResult<ShelfDto>> GetPagedAsync(PaginationParams paginationParams);
+
+        // Belirli bir bloğa (Zone) ait rafları sayfalayarak getirir
+        Task<PagedResult<ShelfDto>> GetPagedByZoneIdAsync(PaginationParams paginationParams, Guid zoneId);
 
         Task<ShelfDto> UpdateAsync(ShelfUpdateDto updateDto);
         Task RemoveAsync(Guid id);

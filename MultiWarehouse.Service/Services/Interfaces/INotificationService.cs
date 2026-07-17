@@ -1,7 +1,5 @@
 ﻿using MultiWarehouse.Shared.DTOs.NotificationDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Interfaces
 {
@@ -12,6 +10,10 @@ namespace MultiWarehouse.Service.Services.Interfaces
 
         /// <summary>Belirli bir kullanıcıya ait tüm aktif bildirimleri getirir.</summary>
         Task<IEnumerable<NotificationDto>> GetAllByUserIdAsync(Guid userId);
+
+        //pagination
+        // Belirli bir kullanıcıya ait bildirimleri sayfalar (Bildirim Geçmişi Ekranı İçin)
+        Task<PagedResult<NotificationDto>> GetPagedByUserIdAsync(PaginationParams paginationParams, Guid userId);
 
         /// <summary>Kullanıcının henüz okumadığı bildirimlerin sayısını döndürür (Zil ikonu için).</summary>
         Task<int> GetUnreadCountAsync(Guid userId);

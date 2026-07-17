@@ -1,5 +1,4 @@
-﻿// MultiWarehouse.Service/Services/Implementations/NotificationService.cs
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MultiWarehouse.Entity.Entities;
 using MultiWarehouse.Service.Context;
@@ -7,10 +6,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.NotificationDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -70,6 +66,21 @@ namespace MultiWarehouse.Service.Services.Implementations
             return _mapper.Map<IEnumerable<NotificationDto>>(notifications);
         }
 
+        //pagination 
+        /// <summary>
+        /// Kullanıcıya ait bildirimleri sayfalayarak getirir.
+        /// (Örn: Bildirimler sayfasına girildiğinde 20'şer 20'şer yüklemek için)
+        /// </summary>
+        public async Task<PagedResult<NotificationDto>> GetPagedByUserIdAsync(PaginationParams paginationParams, Guid userId)
+        {
+            var pagedEntities = await _notificationRepository.GetPagedAsync(
+                paginationParams,
+                filter: n => n.IsActive && n.UserId == userId
+            );
+
+            // AutoMapper Open Generics sağ olsun, tek satırda tertemiz dönüşüm!
+            return _mapper.Map<PagedResult<NotificationDto>>(pagedEntities);
+        }
         /// <summary>
         /// Frontend'de zil (bell) ikonunun üzerinde gösterilecek olan "Okunmamış" bildirim sayısını hesaplar.
         /// </summary>

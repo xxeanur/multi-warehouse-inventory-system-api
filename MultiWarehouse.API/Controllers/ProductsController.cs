@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.ProductDtos;
+using MultiWarehouse.Shared.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -109,6 +110,18 @@ namespace MultiWarehouse.API.Controllers
         {
             await _productService.RemoveAsync(id);
             return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        /// <summary>
+        /// Sistemdeki ürünleri sayfalama (Pagination) destekli olarak getirir.
+        /// Örnek Kullanım: GET /api/Products/Paged?pageNumber=1&pageSize=10
+        /// </summary>
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        {
+            var pagedProducts = await _productService.GetPagedAsync(paginationParams);
+
+            return Ok(CustomResponseDto<PagedResult<ProductDto>>.SuccessResponse(pagedProducts));
         }
     }
 }

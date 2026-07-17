@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.StockMovementDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -62,6 +60,36 @@ namespace MultiWarehouse.API.Controllers
         {
             var movements = await _movementService.GetAllByWarehouseIdAsync(warehouseId);
             return Ok(CustomResponseDto<IEnumerable<StockMovementDto>>.SuccessResponse(movements));
+        }
+        //pagination
+        /// <summary>
+        /// Sistemdeki tüm stok hareketlerini (Tarihçe) sayfalama destekli olarak getirir.
+        /// </summary>
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        {
+            var pagedMovements = await _movementService.GetPagedAsync(paginationParams);
+            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
+        }
+
+        /// <summary>
+        /// Sadece belirtilen ürüne ait hareket tarihçesini sayfalayarak getirir.
+        /// </summary>
+        [HttpGet("PagedByProduct/{productId}")]
+        public async Task<IActionResult> GetPagedByProduct([FromQuery] PaginationParams paginationParams, Guid productId)
+        {
+            var pagedMovements = await _movementService.GetPagedByProductIdAsync(paginationParams, productId);
+            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
+        }
+
+        /// <summary>
+        /// Sadece belirtilen depoda gerçekleşen (giriş/çıkış) hareketleri sayfalayarak getirir.
+        /// </summary>
+        [HttpGet("PagedByWarehouse/{warehouseId}")]
+        public async Task<IActionResult> GetPagedByWarehouse([FromQuery] PaginationParams paginationParams, Guid warehouseId)
+        {
+            var pagedMovements = await _movementService.GetPagedByWarehouseIdAsync(paginationParams, warehouseId);
+            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
         }
 
         /// <summary>Mevcut bir hareketin durumunu, açıklamasını veya referans numarasını günceller. (Miktar güncellenemez!)</summary>

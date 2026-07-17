@@ -11,11 +11,7 @@ using MultiWarehouse.Shared.DTOs.SupplierDtos;
 using MultiWarehouse.Shared.DTOs.UserDtos;
 using MultiWarehouse.Shared.DTOs.WarehouseDtos;
 using MultiWarehouse.Shared.DTOs.WarehouseZoneDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Mappings
 {
@@ -74,6 +70,9 @@ namespace MultiWarehouse.Service.Mappings
             // AuditLog Mappings
             CreateMap<AuditLog, AuditLogDto>().ReverseMap();
             CreateMap<AuditLogCreateDto, AuditLog>();
+
+            // PagedResult<Entity> -> PagedResult<Dto> dönüşümünü otomatik tanıması için
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>));
         }
     }
 }

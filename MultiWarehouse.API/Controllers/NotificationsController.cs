@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.NotificationDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -39,6 +37,18 @@ namespace MultiWarehouse.API.Controllers
         {
             var notifications = await _notificationService.GetAllByUserIdAsync(userId);
             return Ok(CustomResponseDto<IEnumerable<NotificationDto>>.SuccessResponse(notifications));
+        }
+
+        /// <summary>
+        /// Sadece belirtilen kullanıcıya ait bildirimleri sayfalayarak getirir.
+        /// Örnek: GET /api/Notifications/PagedByUser/12345-abcde...?pageNumber=1&pageSize=10
+        /// </summary>
+        [HttpGet("PagedByUser/{userId}")]
+        public async Task<IActionResult> GetPagedByUser([FromQuery] PaginationParams paginationParams, Guid userId)
+        {
+            var pagedNotifications = await _notificationService.GetPagedByUserIdAsync(paginationParams, userId);
+
+            return Ok(CustomResponseDto<PagedResult<NotificationDto>>.SuccessResponse(pagedNotifications));
         }
 
         /// <summary>Kullanıcının henüz okumadığı bildirim adedini getirir (Zil ikonu badge'i için).</summary>

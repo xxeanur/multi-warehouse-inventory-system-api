@@ -6,10 +6,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.AuditLogDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -81,6 +78,47 @@ namespace MultiWarehouse.Service.Services.Implementations
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<AuditLogDto>>(logs);
+        }
+
+        //pagination 
+        /// <summary>
+        /// Sistemdeki tüm denetim loglarını sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<AuditLogDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            var pagedEntities = await _auditLogRepository.GetPagedAsync(
+                paginationParams,
+                filter: a => a.IsActive
+                // Not: Generic Repository'ye ileride OrderBy eklediğimizde buraya ".OrderByDescending(a => a.CreatedDate)" gelecek ki en son loglar ilk sayfada görünsün.
+            );
+
+            return _mapper.Map<PagedResult<AuditLogDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Belirli bir kullanıcının sistemdeki ayak izlerini (loglarını) sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<AuditLogDto>> GetPagedByUserIdAsync(PaginationParams paginationParams, Guid userId)
+        {
+            var pagedEntities = await _auditLogRepository.GetPagedAsync(
+                paginationParams,
+                filter: a => a.IsActive && a.UserId == userId
+            );
+
+            return _mapper.Map<PagedResult<AuditLogDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirtilen bir tabloya ait değişiklik geçmişini sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<AuditLogDto>> GetPagedByTableNameAsync(PaginationParams paginationParams, string tableName)
+        {
+            var pagedEntities = await _auditLogRepository.GetPagedAsync(
+                paginationParams,
+                filter: a => a.IsActive && a.TableName.ToLower() == tableName.ToLower()
+            );
+
+            return _mapper.Map<PagedResult<AuditLogDto>>(pagedEntities);
         }
     }
 }

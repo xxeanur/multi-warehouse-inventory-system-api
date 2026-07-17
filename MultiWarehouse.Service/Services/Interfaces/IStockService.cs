@@ -1,7 +1,5 @@
 ﻿using MultiWarehouse.Shared.DTOs.StockDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Interfaces
 {
@@ -19,6 +17,19 @@ namespace MultiWarehouse.Service.Services.Interfaces
 
         /// <summary>Spesifik bir raftaki tüm stokları getirir.</summary>
         Task<IEnumerable<StockDto>> GetAllByShelfIdAsync(Guid shelfId);
+
+        //pagination
+        // Tüm stokları sayfalar
+        Task<PagedResult<StockDto>> GetPagedAsync(PaginationParams paginationParams);
+
+        // Belirli bir ürüne ait stokları sayfalar
+        Task<PagedResult<StockDto>> GetPagedByProductIdAsync(PaginationParams paginationParams, Guid productId);
+
+        // Belirli bir depodaki stokları sayfalar
+        Task<PagedResult<StockDto>> GetPagedByWarehouseIdAsync(PaginationParams paginationParams, Guid warehouseId);
+
+        // Belirli bir raftaki stokları sayfalar
+        Task<PagedResult<StockDto>> GetPagedByShelfIdAsync(PaginationParams paginationParams, Guid shelfId);
 
         Task<StockDto> UpdateAsync(StockUpdateDto updateDto);
         Task RemoveAsync(Guid id);

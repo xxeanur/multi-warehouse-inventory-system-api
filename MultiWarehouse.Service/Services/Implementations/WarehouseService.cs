@@ -6,9 +6,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.WarehouseDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -70,6 +68,19 @@ namespace MultiWarehouse.Service.Services.Implementations
             return _mapper.Map<IEnumerable<WarehouseDto>>(warehouses);
         }
 
+        /// <summary>
+        /// Sistemdeki aktif depoları sayfalama altyapısı ile getirir. (DataGrid ve Listeler için)
+        /// </summary>
+        public async Task<PagedResult<WarehouseDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            var pagedEntities = await _warehouseRepository.GetPagedAsync(
+                paginationParams,
+                filter: w => w.IsActive
+            );
+
+            // İŞTE BÜTÜN SİHİR BURADA: Tek satırda hem listeyi hem sayfa numaralarını mapler!
+            return _mapper.Map<PagedResult<WarehouseDto>>(pagedEntities);
+        }
         /// <summary>
         /// Mevcut bir deponun temel bilgilerini günceller.
         /// Depo adının başka bir depoyla çakışıp çakışmadığını kontrol eder.

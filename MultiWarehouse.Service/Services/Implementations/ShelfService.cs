@@ -6,10 +6,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.ShelfDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -82,6 +79,33 @@ namespace MultiWarehouse.Service.Services.Implementations
         {
             var shelves = await _shelfRepository.Where(s => s.WarehouseZoneId == zoneId && s.IsActive).ToListAsync();
             return _mapper.Map<IEnumerable<ShelfDto>>(shelves);
+        }
+
+        /// <summary>
+        /// Sistemdeki tüm aktif rafları sayfalama altyapısı ile getirir.
+        /// </summary>
+        public async Task<PagedResult<ShelfDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            var pagedEntities = await _shelfRepository.GetPagedAsync(
+                paginationParams,
+                filter: s => s.IsActive
+            );
+
+            return _mapper.Map<PagedResult<ShelfDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirli bir bloğa (Zone) ait olan aktif rafları sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<ShelfDto>> GetPagedByZoneIdAsync(PaginationParams paginationParams, Guid zoneId)
+        {
+            var pagedEntities = await _shelfRepository.GetPagedAsync(
+                paginationParams,
+                // İşte Generic Repository'nin gücü: Filtreyi dinamik olarak genişlettik!
+                filter: s => s.IsActive && s.WarehouseZoneId == zoneId
+            );
+
+            return _mapper.Map<PagedResult<ShelfDto>>(pagedEntities);
         }
 
         /// <summary>

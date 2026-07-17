@@ -1,12 +1,9 @@
-﻿// MultiWarehouse.API/Controllers/WarehousesController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.WarehouseDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -50,6 +47,18 @@ namespace MultiWarehouse.API.Controllers
         {
             var warehouses = await _warehouseService.GetAllAsync();
             return Ok(CustomResponseDto<IEnumerable<WarehouseDto>>.SuccessResponse(warehouses));
+        }
+
+        /// <summary>
+        /// Sistemdeki depoları sayfalama (Pagination) destekli olarak getirir.
+        /// Örnek Kullanım: GET /api/Warehouses/Paged?pageNumber=1&pageSize=10
+        /// </summary>
+        [HttpGet("Paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        {
+            var pagedWarehouses = await _warehouseService.GetPagedAsync(paginationParams);
+
+            return Ok(CustomResponseDto<PagedResult<WarehouseDto>>.SuccessResponse(pagedWarehouses));
         }
 
         /// <summary>

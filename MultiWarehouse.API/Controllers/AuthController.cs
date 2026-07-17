@@ -2,7 +2,6 @@
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs; // CustomResponseDto için gerekli
 using MultiWarehouse.Shared.DTOs.AuthDtos;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -19,8 +18,8 @@ namespace MultiWarehouse.API.Controllers
 
 
         /// <summary>
-        /// Kullanıcının e-posta ve şifresi ile sisteme giriş yapmasını (Login) sağlar.
-        /// İşlem başarılı olursa kullanıcının kimliğini doğrulayan bir Access Token ve arka planda yenileme yapacak bir Refresh Token döner.
+        /// Kullanıcının e-posta ve şifresi ile sisteme giriş yapmasını sağlar.
+        /// Access Token ve arka planda yenileme yapacak bir Refresh Token döner.
         /// </summary>
         /// <param name="loginDto">Kullanıcı giriş bilgileri (E-posta ve Şifre)</param>
         /// <returns>İçerisinde JWT ve geçerlilik süreleri olan standart bir yanıt döner.</returns>
@@ -36,7 +35,6 @@ namespace MultiWarehouse.API.Controllers
 
         /// <summary>
         /// Süresi dolan Access Token'ı, geçerli bir Refresh Token kullanarak yeniler.
-        /// Kullanıcıdan tekrar şifre istemeden oturumun kesintisiz devam etmesini sağlar.
         /// </summary>
         /// <param name="refreshTokenDto">Kullanıcının elindeki mevcut Refresh Token verisi</param>
         /// <returns>Yepyeni bir Access Token ve Refresh Token paketi döner.</returns>

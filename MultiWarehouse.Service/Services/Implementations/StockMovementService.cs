@@ -8,10 +8,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.StockMovementDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -269,6 +266,46 @@ namespace MultiWarehouse.Service.Services.Implementations
             return _mapper.Map<IEnumerable<StockMovementDto>>(movements);
         }
 
+        //pagination
+        /// <summary>
+        /// Sistemdeki tüm stok hareketlerini sayfalayarak getirir. (Tarihe göre yeniden eskiye)
+        /// </summary>
+        public async Task<PagedResult<StockMovementDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            var pagedEntities = await _movementRepository.GetPagedAsync(
+                paginationParams,
+                filter: m => m.IsActive
+                // Not: Generic repository'ne ileride OrderBy özelliği eklersek buraya ".OrderByDescending(m => m.CreatedDate)" ekleyebilirsin.
+            );
+
+            return _mapper.Map<PagedResult<StockMovementDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirli bir ürünün geçmişindeki hareketleri sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<StockMovementDto>> GetPagedByProductIdAsync(PaginationParams paginationParams, Guid productId)
+        {
+            var pagedEntities = await _movementRepository.GetPagedAsync(
+                paginationParams,
+                filter: m => m.IsActive && m.ProductId == productId
+            );
+
+            return _mapper.Map<PagedResult<StockMovementDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Belirli bir deponun dahil olduğu (ister kaynak, ister hedef olsun) hareketleri sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<StockMovementDto>> GetPagedByWarehouseIdAsync(PaginationParams paginationParams, Guid warehouseId)
+        {
+            var pagedEntities = await _movementRepository.GetPagedAsync(
+                paginationParams,
+                filter: m => m.IsActive && (m.SourceWarehouseId == warehouseId || m.DestinationWarehouseId == warehouseId)
+            );
+
+            return _mapper.Map<PagedResult<StockMovementDto>>(pagedEntities);
+        }
         public async Task<StockMovementDto> UpdateAsync(StockMovementUpdateDto updateDto)
         {
             var movement = await _movementRepository.Where(m => m.Id == updateDto.Id && m.IsActive).SingleOrDefaultAsync();

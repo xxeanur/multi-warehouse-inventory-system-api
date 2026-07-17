@@ -7,10 +7,7 @@ using MultiWarehouse.Service.Exceptions;
 using MultiWarehouse.Service.Repositories.Interfaces;
 using MultiWarehouse.Service.Services.Interfaces;
 using MultiWarehouse.Shared.DTOs.StockDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.Service.Services.Implementations
 {
@@ -118,6 +115,59 @@ namespace MultiWarehouse.Service.Services.Implementations
         {
             var stocks = await _stockRepository.Where(s => s.ShelfId == shelfId && s.IsActive).ToListAsync();
             return _mapper.Map<IEnumerable<StockDto>>(stocks);
+        }
+
+        /// <summary>
+        /// Sistemdeki tüm aktif stokları sayfalama altyapısı ile getirir.
+        /// </summary>
+        public async Task<PagedResult<StockDto>> GetPagedAsync(PaginationParams paginationParams)
+        {
+            var pagedEntities = await _stockRepository.GetPagedAsync(
+                paginationParams,
+                filter: s => s.IsActive
+            );
+
+            return _mapper.Map<PagedResult<StockDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirli bir ürüne ait stok kayıtlarını sayfalayarak getirir.
+        /// (Örn: "iPhone 15 pro nerelerde var?" sayfasındaki tablo için)
+        /// </summary>
+        public async Task<PagedResult<StockDto>> GetPagedByProductIdAsync(PaginationParams paginationParams, Guid productId)
+        {
+            var pagedEntities = await _stockRepository.GetPagedAsync(
+                paginationParams,
+                filter: s => s.IsActive && s.ProductId == productId
+            );
+
+            return _mapper.Map<PagedResult<StockDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirli bir deponun içindeki stok kayıtlarını sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<StockDto>> GetPagedByWarehouseIdAsync(PaginationParams paginationParams, Guid warehouseId)
+        {
+            var pagedEntities = await _stockRepository.GetPagedAsync(
+                paginationParams,
+                filter: s => s.IsActive && s.WarehouseId == warehouseId
+            );
+
+            return _mapper.Map<PagedResult<StockDto>>(pagedEntities);
+        }
+
+        /// <summary>
+        /// Sadece belirli bir raftaki stok kayıtlarını sayfalayarak getirir.
+        /// </summary>
+        public async Task<PagedResult<StockDto>> GetPagedByShelfIdAsync(PaginationParams paginationParams, Guid shelfId)
+        {
+            var pagedEntities = await _stockRepository.GetPagedAsync(
+                paginationParams,
+                filter: s => s.IsActive && s.ShelfId == shelfId
+            );
+
+            return _mapper.Map<PagedResult<StockDto>>(pagedEntities);
         }
 
         /// <summary>
