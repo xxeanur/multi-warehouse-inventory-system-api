@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Definations;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.WarehouseZoneDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.API.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+    [Authorize] // Okuma işlemleri tüm yetkili kullanıcılara açıktır (Staff dahil).
     [Route("api/[controller]")]
     [ApiController]
     public class WarehouseZonesController : ControllerBase
@@ -21,14 +18,54 @@ namespace MultiWarehouse.API.Controllers
             _zoneService = zoneService;
         }
 
+        #region Write Operations (SuperAdmin & WarehouseManager Only)
+
         /// <summary>
-        /// Depo içine yeni bir blok/alan ekler.
+        /// Depo içine yeni bir blok/alan ekler. (SuperAdmin veya Kendi Deposundaki Manager)
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin,WarehouseManager")]
         public async Task<IActionResult> Create(WarehouseZoneCreateDto createDto)
         {
             var zone = await _zoneService.CreateAsync(createDto);
             return Ok(CustomResponseDto<WarehouseZoneDto>.SuccessResponse(zone));
+        }
+
+        /// <summary>
+        /// Mevcut bir depo alanını günceller. (SuperAdmin veya Kendi Deposundaki Manager)
+        /// </summary>
+        [HttpPut]
+        [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+        public async Task<IActionResult> Update(WarehouseZoneUpdateDto updateDto)
+        {
+            var zone = await _zoneService.UpdateAsync(updateDto);
+            return Ok(CustomResponseDto<WarehouseZoneDto>.SuccessResponse(zone));
+        }
+
+        /// <summary>
+        /// Belirtilen depo alanını sistemden siler (pasife çeker). (SuperAdmin veya Kendi Deposundaki Manager)
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+        public async Task<IActionResult> Remove(Guid id)
+        {
+            await _zoneService.RemoveAsync(id);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Read Operations (All Authenticated Users)
+
+        /// <summary>
+        /// Tüm aktif alanları/blokları listeler.
+        /// (Not: Sistem yetkiye göre sadece kullanıcının erişebildiği kayıtları döner).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var zones = await _zoneService.GetAllAsync();
+            return Ok(CustomResponseDto<IEnumerable<WarehouseZoneDto>>.SuccessResponse(zones));
         }
 
         /// <summary>
@@ -42,16 +79,6 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Tüm depolardaki tüm alanları/blokları listeler.
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var zones = await _zoneService.GetAllAsync();
-            return Ok(CustomResponseDto<IEnumerable<WarehouseZoneDto>>.SuccessResponse(zones));
-        }
-
-        /// <summary>
         /// Belirli bir deponun içindeki alanları listeler.
         /// </summary>
         [HttpGet("GetByWarehouseId/{warehouseId}")]
@@ -61,24 +88,6 @@ namespace MultiWarehouse.API.Controllers
             return Ok(CustomResponseDto<IEnumerable<WarehouseZoneDto>>.SuccessResponse(zones));
         }
 
-        /// <summary>
-        /// Mevcut bir depo alanını günceller.
-        /// </summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(WarehouseZoneUpdateDto updateDto)
-        {
-            var zone = await _zoneService.UpdateAsync(updateDto);
-            return Ok(CustomResponseDto<WarehouseZoneDto>.SuccessResponse(zone));
-        }
-
-        /// <summary>
-        /// Belirtilen depo alanını sistemden siler (pasife çeker).
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
-        {
-            await _zoneService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
-        }
+        #endregion
     }
 }

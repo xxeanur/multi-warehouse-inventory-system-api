@@ -6,14 +6,9 @@ using System.Linq.Expressions;
 
 namespace MultiWarehouse.Service.Repositories.Implementations
 {
-    // <T> (Generic Yapı): Bu sınıfın belirli bir tabloya bağımlı olmadığını gösterir. T burada bir şablondur.
-    // where T : class: Sisteme, "Bu T yerine sadece veritabanı tablolarımızı temsil eden referans tipli sınıfları (Entity'leri) gönderebilirsin" diyerek tip güvenliğini (Type Safety) sağlarız.
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        // _context: Veritabanıyla olan ana bağlantımızdır. protected yapmamızın sebebi, yarın öbür gün bu sınıftan miras alan özel bir repo (Örn: ProductRepository) yazmak istersek, onun da bu bağlantıya erişebilmesini sağlamaktır.
         protected readonly AppDbContext _context;
-
-        // _dbSet: Hedef tabloyu (örneğin Products tablosunu) hafızaya aldığımız ve işlemleri doğrudan üzerinden yaptığımız değişkendir.
         private readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
@@ -22,22 +17,21 @@ namespace MultiWarehouse.Service.Repositories.Implementations
             _dbSet = _context.Set<T>();
         }
 
+        #region Read Operations
+
         /// <summary>
         /// Veritabanındaki tek bir kaydı ID'sine göre getirir.
         /// </summary>
         public async Task<T?> GetByIdAsync(Guid id)
         {
-            // FindAsync: EF Core'un en performanslı ID arama metodudur. Önce veritabanına gitmek yerine bellekte (Local Cache) bu ID'ye sahip kayıt var mı diye bakar. Bulamazsa SQL sorgusu atar.
             return await _dbSet.FindAsync(id);
         }
 
         /// <summary>
-        /// Tablodaki tüm kayıtları getirir.
+        /// Tablodaki tüm kayıtları AsNoTracking ile takip edilmeden getirir.
         /// </summary>
         public IQueryable<T> GetAll()
         {
-            // IQueryable: Veriyi veritabanından hemen çekmez (Deferred Execution). Sonuna .ToList() veya .FirstOrDefault() diyene kadar SQL çalışmaz. Bu sayede arkasına .Take(10) ekleyip sayfalama (Pagination) yapılabilir.
-            // AsNoTracking: "Bu veriyi sadece okuyacağım, üzerinde güncelleme yapmayacağım" demektir. EF Core'un her satırı takip etmesini engeller ve RAM kullanımını muazzam iyileştirir.
             return _dbSet.AsNoTracking();
         }
 
@@ -46,18 +40,45 @@ namespace MultiWarehouse.Service.Repositories.Implementations
         /// </summary>
         public IQueryable<T> Where(Expression<Func<T, bool>> expression)
         {
-            // Expression<Func<T, bool>>: Yazdığımız LINQ şartlarını (Örn: x => x.IsActive == true) arka planda güvenli bir şekilde ham SQL WHERE sorgusuna çevirir.
             return _dbSet.Where(expression);
         }
 
         /// <summary>
-        /// Belirli bir şarta uyan tek bir kayıt bile var mı diye kontrol eder.
+        /// Belirli bir şarta uyan kayıt var mı kontrol eder.
         /// </summary>
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
         {
-            // Bütün veriyi RAM'e çekmek yerine, veritabanında şarta uyan kayıt var mı diye bakar ve true/false döner. "SELECT EXISTS(...)" şeklinde çok hafif bir SQL üretir.
             return await _dbSet.AnyAsync(expression);
         }
+
+        /// <summary>
+        /// Filtreleme, include ve sıralama özellikleri ile sayfalanmış veri döner.
+        /// </summary>
+        public async Task<PagedResult<T>> GetPagedAsync(
+            PaginationParams paginationParams,
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Func<IQueryable<T>, IQueryable<T>>? include = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null) query = query.Where(filter);
+            if (include != null) query = include(query);
+            if (orderBy != null) query = orderBy(query);
+
+            var totalRecords = await query.CountAsync();
+
+            var data = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<T>(data, totalRecords, paginationParams.PageNumber, paginationParams.PageSize);
+        }
+
+        #endregion
+
+        #region Write Operations
 
         /// <summary>
         /// Yeni bir kaydı veritabanına eklenmek üzere işaretler.
@@ -72,9 +93,6 @@ namespace MultiWarehouse.Service.Repositories.Implementations
         /// </summary>
         public void Update(T entity)
         {
-            // Not: Update ve Remove işlemleri asenkron (Async) değildir. 
-            // Çünkü o anda veritabanına gidip bir şey silmez/güncellemezler. 
-            // Sadece nesnenin EF Core belleğindeki durumunu (State) Modified veya Deleted olarak işaretlerler.
             _dbSet.Update(entity);
         }
 
@@ -83,38 +101,9 @@ namespace MultiWarehouse.Service.Repositories.Implementations
         /// </summary>
         public void Remove(T entity)
         {
-            // Asıl işlem (SQL'e yansıma), servis katmanında tüm işler bitip "await _context.SaveChangesAsync()" çağrıldığında gerçekleşir.
             _dbSet.Remove(entity);
         }
 
-        public async Task<PagedResult<T>> GetPagedAsync(PaginationParams paginationParams, Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IQueryable<T>>? include = null)
-        {
-            // 1. AsNoTracking ile performansı artırıyoruz (Çünkü veriyi sadece okuyup sayfalayacağız).
-            IQueryable<T> query = _dbSet.AsNoTracking();//takip yapma, veriyi çekme sorguyu oluştur IQeryable
-
-            // 2. Eğer filtre (Örn: IsActive == true) gönderilmişse sorguya ekle.
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            // 3. Eğer ilişkili tablo (Örn: Include(x => x.Category)) gönderilmişse sorguya ekle.
-            if (include != null)
-            {
-                query = include(query);
-            }
-
-            // 4. Toplam kayıt sayısını veritabanından çek.
-            var count = await query.CountAsync();
-
-            // 5. EF Core ile Sayfalama (Skip & Take) işlemini uygula.
-            var items = await query
-                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
-                .Take(paginationParams.PageSize)
-                .ToListAsync();
-
-            // 6. Sonucu Ortak PagedResult sınıfına sarıp döndür.
-            return new PagedResult<T>(items, count, paginationParams.PageNumber, paginationParams.PageSize);
-        }
+        #endregion
     }
 }

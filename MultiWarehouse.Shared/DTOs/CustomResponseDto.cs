@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace MultiWarehouse.Shared.DTOs
-{//Bu dosya, API'nin Next.js frontend'e göndereceği cevapların (JSON) her zaman aynı standart formatta olmasını sağlar. İçinde iki farklı sınıf var.
-
-    // 1. DATA DÖNMEYEN DURUMLAR İÇİN (Örn: Sadece başarılı mesajı veya hata dönerken)
+﻿namespace MultiWarehouse.Shared.DTOs
+{
 
     public class CustomResponseDto
     {
@@ -26,14 +22,13 @@ namespace MultiWarehouse.Shared.DTOs
         }
     }
 
-    // 2. DATA DÖNEN DURUMLAR İÇİN (Örn: Ürün listesi, Kullanıcı bilgisi dönerken)
     public class CustomResponseDto<T>
     {
         public T? Data { get; set; }
         public bool Success { get; set; }
         public List<string>? ErrorMessage { get; set; }
 
-        public static CustomResponseDto<T> SuccessResponse()//işlem başarılı ama veri yok mesela!!
+        public static CustomResponseDto<T> SuccessResponse()
         {
             return new CustomResponseDto<T> { Success = true, ErrorMessage = null };
         }

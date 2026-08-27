@@ -66,5 +66,5 @@ namespace MultiWarehouse.API.Middlewares
     // Proje genelinde iş kurallarına uymayan durumlarda (Örn: "Stok yetersiz", "Kullanıcı bulunamadı") 
     // doğrudan 'throw new ClientSideException("mesaj")' diyerek güvenli hata fırlatmak için kullandığımız sınıf.
     // Bu sınıftan fırlatılan her hata, yukarıdaki mekanizmada anında 400 koduyla yakalanıp frontend'e iletilir.
- 
+
 }

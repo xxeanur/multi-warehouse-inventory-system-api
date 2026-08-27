@@ -1,9 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.User;
 
 namespace MultiWarehouse.Shared.DTOs.UserDtos
 {
@@ -15,8 +10,15 @@ namespace MultiWarehouse.Shared.DTOs.UserDtos
         public string Email { get; set; } = string.Empty;
         public UserRole Role { get; set; }
 
-        // BaseEntity'den gelen, frontend'de "Kayıt Tarihi" ve "Durum" sütunlarında göstereceğimiz alanlar
+        public string Phone { get; set; } = string.Empty;
+        public string AvatarUrl { get; set; } = string.Empty;
+
         public DateTime CreatedDate { get; set; }
         public bool IsActive { get; set; }
+
+        public Guid? WarehouseId { get; set; }
+        public string WarehouseName { get; set; } = string.Empty;
+        public bool ReceiveEmailNotifications { get; set; }
+        public bool ReceiveInAppNotifications { get; set; }
     }
 }

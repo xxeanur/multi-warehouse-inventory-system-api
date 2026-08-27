@@ -1,9 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.Warehouse;
 
 namespace MultiWarehouse.Shared.DTOs.ShelfDtos
 {
@@ -13,7 +8,6 @@ namespace MultiWarehouse.Shared.DTOs.ShelfDtos
         public double Width { get; set; }
         public double Height { get; set; }
         public double Depth { get; set; }
-        public double MaxVolume { get; set; }
         public double MaxWeight { get; set; }
         public ShelfStatus Status { get; set; } = ShelfStatus.Available;
         public Guid WarehouseZoneId { get; set; }

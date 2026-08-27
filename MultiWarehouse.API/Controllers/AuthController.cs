@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
-using MultiWarehouse.Shared.DTOs; // CustomResponseDto için gerekli
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MultiWarehouse.Service.Services.Interfaces.Identity;
+using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.AuthDtos;
+using MultiWarehouse.Shared.DTOs.UserDtos;
+using System.Security.Claims;
 
 namespace MultiWarehouse.API.Controllers
 {
@@ -16,36 +19,109 @@ namespace MultiWarehouse.API.Controllers
             _authService = authService;
         }
 
+        #region Login & Token
 
         /// <summary>
-        /// Kullanıcının e-posta ve şifresi ile sisteme giriş yapmasını sağlar.
-        /// Access Token ve arka planda yenileme yapacak bir Refresh Token döner.
+        /// Kullanıcı girişi yapar ve JWT token döner.
         /// </summary>
-        /// <param name="loginDto">Kullanıcı giriş bilgileri (E-posta ve Şifre)</param>
-        /// <returns>İçerisinde JWT ve geçerlilik süreleri olan standart bir yanıt döner.</returns>
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            // 1. Servisten sadece saf veriyi (TokenDto) al.
-            var tokenDto = await _authService.LoginAsync(loginDto);
+            var userAgent = Request.Headers["User-Agent"].ToString();
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Bilinmiyor";
 
-            // 2. Senin dediğin gibi tam burada, API'nin çıkış noktasında pakete sar ve gönder!
+            var tokenDto = await _authService.LoginAsync(loginDto, userAgent, ipAddress);
             return Ok(CustomResponseDto<TokenDto>.SuccessResponse(tokenDto));
         }
 
         /// <summary>
-        /// Süresi dolan Access Token'ı, geçerli bir Refresh Token kullanarak yeniler.
+        /// Süresi dolan Access Token'ı yeniler.
         /// </summary>
-        /// <param name="refreshTokenDto">Kullanıcının elindeki mevcut Refresh Token verisi</param>
-        /// <returns>Yepyeni bir Access Token ve Refresh Token paketi döner.</returns>
         [HttpPost("refresh-token")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateTokenByRefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
-            // 1. DTO içindeki token metnini alıp servise gönderiyoruz.
             var tokenDto = await _authService.CreateTokenByRefreshTokenAsync(refreshTokenDto.Token);
-
-            // 2. Başarılıysa, 200 OK statü koduyla yeni token paketimizi standart response modelimize sarıp dönüyoruz.
             return Ok(CustomResponseDto<TokenDto>.SuccessResponse(tokenDto));
         }
+
+        /// <summary>
+        /// Mevcut oturumu kapatır ve Refresh Token'ı siler.
+        /// </summary>
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenDto refreshTokenDto)
+        {
+            await _authService.LogoutAsync(refreshTokenDto.Token);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Session Management
+
+        /// <summary>
+        /// Kullanıcının aktif olan tüm oturumlarını listeler.
+        /// </summary>
+        [HttpGet("sessions")]
+        [Authorize]
+        public async Task<IActionResult> GetSessions([FromHeader(Name = "X-Refresh-Token")] string currentRefreshToken)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var sessions = await _authService.GetActiveSessionsAsync(userId, currentRefreshToken);
+            return Ok(CustomResponseDto<IEnumerable<ActiveSessionDto>>.SuccessResponse(sessions));
+        }
+
+        /// <summary>
+        /// Belirtilen oturumu zorla sonlandırır.
+        /// </summary>
+        [HttpDelete("sessions/{tokenId}")]
+        [Authorize]
+        public async Task<IActionResult> RevokeSession(Guid tokenId)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            await _authService.RevokeSessionAsync(userId, tokenId);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        /// <summary>
+        /// Mevcut cihaz hariç diğer tüm açık oturumları sonlandırır.
+        /// </summary>
+        [HttpDelete("sessions/revoke-others")]
+        [Authorize]
+        public async Task<IActionResult> RevokeOtherSessions([FromHeader(Name = "X-Refresh-Token")] string currentRefreshToken)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            await _authService.RevokeAllOtherSessionsAsync(userId, currentRefreshToken);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Password Reset
+
+        /// <summary>
+        /// Şifresini unutan kullanıcılar için sıfırlama maili gönderir.
+        /// </summary>
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            await _authService.RequestPasswordResetAsync(dto.Email);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        /// <summary>
+        /// Mailden gelen token ile kullanıcının şifresini kalıcı olarak sıfırlar.
+        /// </summary>
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordConfirmDto dto)
+        {
+            await _authService.ConfirmPasswordResetAsync(dto);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
     }
 }

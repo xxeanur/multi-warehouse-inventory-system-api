@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MultiWarehouse.API.Middlewares;
 using MultiWarehouse.Service.Context;
+using MultiWarehouse.Service.Extensions;
 using MultiWarehouse.Service.Repositories.Implementations;
 using MultiWarehouse.Service.Repositories.Interfaces;
-using MultiWarehouse.Service.Services.Implementations;
-using MultiWarehouse.Service.Services.Interfaces;
-using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -20,6 +17,17 @@ var builder = WebApplication.CreateBuilder(args);
 // =========================================================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNextJs", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Frontend'in çalıştığı tam adres
+              .AllowAnyHeader()  // Her türlü Header'a (Authorization vb.) izin ver
+              .AllowAnyMethod()  // GET, POST, PUT, DELETE hepsine izin ver
+              .AllowCredentials(); // (Opsiyonel) İleride Cookie tabanlı yetkilendirme yaparsan şarttır
+    });
+});
 
 // =========================================================
 // 2. VERİTABANI VE KONFİGÜRASYON (OPTIONS) AYARLARI
@@ -41,24 +49,15 @@ builder.Services.Configure<MultiWarehouse.Shared.Configurations.CustomTokenOptio
 // Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Services
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ISupplierService, SupplierService>();
-builder.Services.AddScoped<IWarehouseService, WarehouseService>();
-builder.Services.AddScoped<IWarehouseZoneService, WarehouseZoneService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IShelfService, ShelfService>();
-builder.Services.AddScoped<IStockService, StockService>();
-builder.Services.AddScoped<IStockMovementService, StockMovementService>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+//servis ekleme
+builder.Services.AddServiceLayer();
+
+
 
 // =========================================================
 // 4. SWAGGER VE GÜVENLİK (API DOKÜMANTASYONU)
@@ -122,6 +121,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // =========================================================
@@ -138,6 +138,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCustomException();
 app.UseHttpsRedirection();
+
+app.UseCors("AllowNextJs");
 
 // Kimlik Doğrulama ve Yetkilendirme Middleware'leri
 app.UseAuthentication(); // JWT ile giriş yapıldığını doğrular

@@ -1,9 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.Common;
 
 namespace MultiWarehouse.Shared.DTOs.AuditLogDtos
 {
@@ -18,5 +13,6 @@ namespace MultiWarehouse.Shared.DTOs.AuditLogDtos
         public string IpAddress { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public bool IsActive { get; set; }
+
     }
 }

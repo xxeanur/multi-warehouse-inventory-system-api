@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Definations;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.SupplierDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.API.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+    [Authorize] // Okuma işlemleri tüm yetkili kullanıcılara açıktır.
     [Route("api/[controller]")]
     [ApiController]
     public class SuppliersController : ControllerBase
@@ -21,10 +18,13 @@ namespace MultiWarehouse.API.Controllers
             _supplierService = supplierService;
         }
 
+        #region Write Operations (Only SuperAdmin)
+
         /// <summary>
-        /// Yeni bir tedarikçi oluşturur.
+        /// Yeni bir tedarikçi oluşturur. Sadece SuperAdmin yetkilidir.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Create(SupplierCreateDto createDto)
         {
             var supplier = await _supplierService.CreateAsync(createDto);
@@ -32,14 +32,30 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Belirtilen ID'ye sahip tedarikçiyi getirir.
+        /// Mevcut bir tedarikçinin bilgilerini günceller. Sadece SuperAdmin yetkilidir.
         /// </summary>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpPut]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Update(SupplierUpdateDto updateDto)
         {
-            var supplier = await _supplierService.GetByIdAsync(id);
+            var supplier = await _supplierService.UpdateAsync(updateDto);
             return Ok(CustomResponseDto<SupplierDto>.SuccessResponse(supplier));
         }
+
+        /// <summary>
+        /// Belirtilen tedarikçiyi siler (pasife çeker). Sadece SuperAdmin yetkilidir.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Remove(Guid id)
+        {
+            await _supplierService.RemoveAsync(id);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Read Operations (All Authenticated Users)
 
         /// <summary>
         /// Tüm aktif tedarikçileri listeler.
@@ -52,23 +68,15 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Mevcut bir tedarikçinin bilgilerini günceller.
+        /// Belirtilen ID'ye sahip tedarikçiyi getirir.
         /// </summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(SupplierUpdateDto updateDto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var supplier = await _supplierService.UpdateAsync(updateDto);
+            var supplier = await _supplierService.GetByIdAsync(id);
             return Ok(CustomResponseDto<SupplierDto>.SuccessResponse(supplier));
         }
 
-        /// <summary>
-        /// Belirtilen tedarikçiyi siler (pasife çeker).
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
-        {
-            await _supplierService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
-        }
+        #endregion
     }
 }

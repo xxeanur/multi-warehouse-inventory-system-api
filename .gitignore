@@ -483,5 +483,6 @@ $RECYCLE.BIN/
 
 
 # Uygulama Ayarları ve Şifreler
-appsettings.json
-appsettings.*.json
+appsettings.Development.json
+appsettings.Production.json
+secrets.json

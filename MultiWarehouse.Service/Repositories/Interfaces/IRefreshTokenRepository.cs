@@ -1,12 +1,12 @@
-﻿using MultiWarehouse.Entity.Entities;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Entities.Identity;
 
 namespace MultiWarehouse.Service.Repositories.Interfaces
 {
-    // IGenericRepository'den miras alarak standart Ekle/Sil/Getir yeteneklerini de kazanıyor
     public interface IRefreshTokenRepository : IGenericRepository<RefreshToken>
     {
-        // Sadece bu tabloya özel olan, User bilgisiyle birlikte token getiren metot
+        /// <summary>
+        /// Refresh token'ı User (Kullanıcı) nesnesi ile birlikte include ederek getirir.
+        /// </summary>
         Task<RefreshToken?> GetByTokenWithUserAsync(string token);
     }
 }

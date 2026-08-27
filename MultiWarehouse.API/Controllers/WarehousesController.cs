@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Definations;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.WarehouseDtos;
 using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+    [Authorize] // Okuma işlemleri (Get) tüm giriş yapmış kullanıcılara (Manager, Staff) açıktır.
     [Route("api/[controller]")]
     [ApiController]
     public class WarehousesController : ControllerBase
@@ -19,10 +19,13 @@ namespace MultiWarehouse.API.Controllers
             _warehouseService = warehouseService;
         }
 
+        #region Write Operations (Only SuperAdmin)
+
         /// <summary>
-        /// Sisteme yeni bir depo ekler.
+        /// Sisteme yeni bir depo ekler. Sadece SuperAdmin yetkilidir.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Create(WarehouseCreateDto createDto)
         {
             var warehouse = await _warehouseService.CreateAsync(createDto);
@@ -30,14 +33,30 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Belirtilen ID'ye sahip depoyu detaylarıyla getirir.
+        /// Mevcut bir deponun bilgilerini günceller. Sadece SuperAdmin yetkilidir.
         /// </summary>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpPut]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Update(WarehouseUpdateDto updateDto)
         {
-            var warehouse = await _warehouseService.GetByIdAsync(id);
+            var warehouse = await _warehouseService.UpdateAsync(updateDto);
             return Ok(CustomResponseDto<WarehouseDto>.SuccessResponse(warehouse));
         }
+
+        /// <summary>
+        /// Belirtilen depoyu sistemden siler (pasife çeker). İçi dolu depolar silinemez. Sadece SuperAdmin yetkilidir.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Remove(Guid id)
+        {
+            await _warehouseService.RemoveAsync(id);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Read Operations (All Authenticated Users)
 
         /// <summary>
         /// Sistemdeki tüm aktif depoları listeler.
@@ -57,29 +76,19 @@ namespace MultiWarehouse.API.Controllers
         public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
         {
             var pagedWarehouses = await _warehouseService.GetPagedAsync(paginationParams);
-
             return Ok(CustomResponseDto<PagedResult<WarehouseDto>>.SuccessResponse(pagedWarehouses));
         }
 
         /// <summary>
-        /// Mevcut bir deponun bilgilerini günceller.
+        /// Belirtilen ID'ye sahip depoyu detaylarıyla getirir.
         /// </summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(WarehouseUpdateDto updateDto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var warehouse = await _warehouseService.UpdateAsync(updateDto);
+            var warehouse = await _warehouseService.GetByIdAsync(id);
             return Ok(CustomResponseDto<WarehouseDto>.SuccessResponse(warehouse));
         }
 
-        /// <summary>
-        /// Belirtilen depoyu sistemden siler (pasife çeker).
-        /// İçi dolu depolar silinemez.
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
-        {
-            await _warehouseService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
-        }
+        #endregion
     }
 }

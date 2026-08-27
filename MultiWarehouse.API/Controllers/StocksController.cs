@@ -1,7 +1,6 @@
-﻿// MultiWarehouse.API/Controllers/StocksController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Inventory;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.StockDtos;
 using MultiWarehouse.Shared.Pagination;
@@ -9,9 +8,9 @@ using MultiWarehouse.Shared.Pagination;
 namespace MultiWarehouse.API.Controllers
 {
     /// <summary>
-    /// Depo içindeki anlık stok adetlerini, rezerve durumlarını ve raf konumlarını yöneten Controller.
+    /// Depo içindeki anlık stok adetlerini, rezerve durumlarını ve raf konumlarını sorgulayan Controller.
     /// </summary>
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
+    [Authorize(Roles = "SuperAdmin,WarehouseManager,Staff")] // Staff personeli stoğu görebilmelidir
     [Route("api/[controller]")]
     [ApiController]
     public class StocksController : ControllerBase
@@ -23,18 +22,10 @@ namespace MultiWarehouse.API.Controllers
             _stockService = stockService;
         }
 
-        /// <summary>
-        /// Sisteme yeni bir stok satırı ekler.
-        /// </summary>
-        [HttpPost]
-        public async Task<IActionResult> Create(StockCreateDto createDto)
-        {
-            var stock = await _stockService.CreateAsync(createDto);
-            return Ok(CustomResponseDto<StockDto>.SuccessResponse(stock));
-        }
+        #region Read Operations (Non-Paged)
 
         /// <summary>
-        /// Belirtilen ID'ye sahip stok kaydını getirir.
+        /// Belirtilen ID'ye sahip anlık stok kaydının detaylarını getirir.
         /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
@@ -44,7 +35,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Tüm sistemdeki aktif stok kayıtlarını listeler.
+        /// Sistemdeki miktarı 0'dan büyük olan tüm aktif stokları listeler.
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -54,7 +45,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Bir ürünün tüm depolardaki ve raflardaki dağılımını (stoklarını) listeler.
+        /// Belirli bir ürüne ait tüm depolardaki/raflardaki stok durumunu listeler.
         /// </summary>
         [HttpGet("GetByProductId/{productId}")]
         public async Task<IActionResult> GetByProductId(Guid productId)
@@ -64,7 +55,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Belirli bir depodaki tüm stokları listeler.
+        /// Sadece belirli bir deponun içindeki tüm anlık stokları listeler.
         /// </summary>
         [HttpGet("GetByWarehouseId/{warehouseId}")]
         public async Task<IActionResult> GetByWarehouseId(Guid warehouseId)
@@ -74,7 +65,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Sadece tek bir rafta bulunan ürünlerin stok durumunu listeler.
+        /// Sadece belirli bir rafın içindeki anlık stok durumunu listeler.
         /// </summary>
         [HttpGet("GetByShelfId/{shelfId}")]
         public async Task<IActionResult> GetByShelfId(Guid shelfId)
@@ -83,8 +74,12 @@ namespace MultiWarehouse.API.Controllers
             return Ok(CustomResponseDto<IEnumerable<StockDto>>.SuccessResponse(stocks));
         }
 
+        #endregion
+
+        #region Read Operations (Paged)
+
         /// <summary>
-        /// Sistemdeki tüm stokları sayfalama (Pagination) destekli olarak getirir.
+        /// Sistemdeki stokları sayfalama (Pagination) destekli olarak getirir.
         /// </summary>
         [HttpGet("Paged")]
         public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
@@ -94,7 +89,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Sadece belirtilen ürüne ait stokları sayfalayarak getirir.
+        /// Belirli bir ürüne ait stokları sayfalama (Pagination) destekli olarak getirir.
         /// </summary>
         [HttpGet("PagedByProduct/{productId}")]
         public async Task<IActionResult> GetPagedByProduct([FromQuery] PaginationParams paginationParams, Guid productId)
@@ -104,7 +99,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Sadece belirtilen depoya ait stokları sayfalayarak getirir.
+        /// Sadece belirli bir depoya ait stokları sayfalama (Pagination) destekli olarak getirir.
         /// </summary>
         [HttpGet("PagedByWarehouse/{warehouseId}")]
         public async Task<IActionResult> GetPagedByWarehouse([FromQuery] PaginationParams paginationParams, Guid warehouseId)
@@ -114,7 +109,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Sadece belirtilen rafa ait stokları sayfalayarak getirir.
+        /// Sadece belirli bir rafa ait stokları sayfalama (Pagination) destekli olarak getirir.
         /// </summary>
         [HttpGet("PagedByShelf/{shelfId}")]
         public async Task<IActionResult> GetPagedByShelf([FromQuery] PaginationParams paginationParams, Guid shelfId)
@@ -123,24 +118,6 @@ namespace MultiWarehouse.API.Controllers
             return Ok(CustomResponseDto<PagedResult<StockDto>>.SuccessResponse(pagedStocks));
         }
 
-        /// <summary>
-        /// Mevcut bir stok kaydının miktarını, konumunu veya rezerve durumunu günceller.
-        /// </summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(StockUpdateDto updateDto)
-        {
-            var stock = await _stockService.UpdateAsync(updateDto);
-            return Ok(CustomResponseDto<StockDto>.SuccessResponse(stock));
-        }
-
-        /// <summary>
-        /// Stok kaydını pasife çeker. (Miktarı 0'dan büyük olan stoklar silinemez).
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
-        {
-            await _stockService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
-        }
+        #endregion
     }
 }

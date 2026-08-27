@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.Warehouse;
 
 namespace MultiWarehouse.Shared.DTOs.WarehouseDtos
 {
@@ -10,9 +6,16 @@ namespace MultiWarehouse.Shared.DTOs.WarehouseDtos
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty;
+
+        public string Country { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string District { get; set; } = string.Empty;
+        public string FullAddress { get; set; } = string.Empty;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public string Phone { get; set; } = string.Empty;
         public Guid? ManagerId { get; set; }
         public double MaxCapacity { get; set; }
+        public WarehouseOperationalStatus OperationalStatus { get; set; }
     }
 }

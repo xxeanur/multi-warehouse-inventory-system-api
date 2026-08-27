@@ -1,4 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
+﻿using MultiWarehouse.Entity.Enums.Warehouse;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Dashboard;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.DashboardDtos;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.API.Controllers
 {
     /// <summary>
     /// Sistemin kokpit (vitrin) ekranı için gerekli özet verileri sağlayan API.
+    /// Depo sınırları servis katmanında güvence altına alınmıştır.
     /// </summary>
     [Authorize(Roles = "SuperAdmin,WarehouseManager")]
     [Route("api/[controller]")]

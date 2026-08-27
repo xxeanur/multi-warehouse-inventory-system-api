@@ -1,19 +1,14 @@
-﻿// MultiWarehouse.API/Controllers/CategoriesController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Definations;
 using MultiWarehouse.Shared.DTOs;
 using MultiWarehouse.Shared.DTOs.CategoryDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MultiWarehouse.API.Controllers
 {
-    // Kategori yönetimine yetkisi olanlar erişebilir (Rol ismini kendi yapına göre ayarlayabilirsin)
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Sisteme giriş yapmış herkes (SuperAdmin, Manager, Staff) buraya erişebilir, ancak aşağıdaki metotlarda roller ayrışacak.
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -23,10 +18,13 @@ namespace MultiWarehouse.API.Controllers
             _categoryService = categoryService;
         }
 
+        #region Write Operations (Only SuperAdmin)
+
         /// <summary>
-        /// Yeni kategori oluşturur.
+        /// Yeni kategori oluşturur. Master Data olduğu için sadece SuperAdmin yetkilidir.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")] // YETKİ KORUMASI EKLENDİ
         public async Task<IActionResult> Create(CategoryCreateDto createDto)
         {
             var category = await _categoryService.CreateAsync(createDto);
@@ -34,7 +32,33 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Belirtilen ID'ye sahip aktif kategoriyi getirir.
+        /// Kategoriyi günceller. Sadece SuperAdmin yetkilidir.
+        /// </summary>
+        [HttpPut]
+        [Authorize(Roles = "SuperAdmin")] // YETKİ KORUMASI EKLENDİ
+        public async Task<IActionResult> Update(CategoryUpdateDto updateDto)
+        {
+            var category = await _categoryService.UpdateAsync(updateDto);
+            return Ok(CustomResponseDto<CategoryDto>.SuccessResponse(category));
+        }
+
+        /// <summary>
+        /// Belirtilen kategoriyi pasif (soft delete) duruma çeker. Sadece SuperAdmin yetkilidir.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperAdmin")] // YETKİ KORUMASI EKLENDİ
+        public async Task<IActionResult> Remove(Guid id)
+        {
+            await _categoryService.RemoveAsync(id);
+            return Ok(CustomResponseDto.SuccessResponse());
+        }
+
+        #endregion
+
+        #region Read Operations (All Authenticated Users)
+
+        /// <summary>
+        /// Belirtilen ID'ye sahip aktif kategoriyi getirir. Tüm personeller görüntüleyebilir.
         /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
@@ -44,7 +68,7 @@ namespace MultiWarehouse.API.Controllers
         }
 
         /// <summary>
-        /// Tüm aktif kategorileri listeler.
+        /// Tüm aktif kategorileri listeler. Tüm personeller görüntüleyebilir.
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -53,24 +77,6 @@ namespace MultiWarehouse.API.Controllers
             return Ok(CustomResponseDto<IEnumerable<CategoryDto>>.SuccessResponse(categories));
         }
 
-        /// <summary>
-        /// Kategoriyi günceller.
-        /// </summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(CategoryUpdateDto updateDto)
-        {
-            var category = await _categoryService.UpdateAsync(updateDto);
-            return Ok(CustomResponseDto<CategoryDto>.SuccessResponse(category));
-        }
-
-        /// <summary>
-        /// Belirtilen kategoriyi pasif (soft delete) duruma çeker.
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
-        {
-            await _categoryService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
-        }
+        #endregion
     }
 }

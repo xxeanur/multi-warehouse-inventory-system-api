@@ -22,7 +22,7 @@ namespace MultiWarehouse.Service.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.AuditLog", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Common.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Category", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,169 +94,7 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.InventoryCount", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.ToTable("InventoryCounts");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.InventoryCountDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CountedQty")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ExpectedQty")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("InventoryCountId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ShelfId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryCountId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ShelfId");
-
-                    b.ToTable("InventoryCountDetails");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.PasswordResetToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PasswordResetTokens");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Product", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -330,42 +168,7 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Shelf", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Shelf", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -405,6 +208,10 @@ namespace MultiWarehouse.Service.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("WarehouseZoneId")
                         .HasColumnType("uuid");
 
@@ -418,119 +225,13 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("Shelves");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Stock", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("LastMovementDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReservedQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ShelfId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ShelfId");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.ToTable("Stocks");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.StockMovement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("DestinationShelfId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("DestinationWarehouseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("MovementDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("MovementType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ReferenceNo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("SourceShelfId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("SourceWarehouseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StockMovements");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Supplier", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
+                    b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -542,15 +243,33 @@ namespace MultiWarehouse.Service.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FullAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -572,90 +291,39 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.User", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AvatarUrl")
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FullAddress")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastLoginDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("f8006d37-c69a-4ae7-87b8-588556a9e174"),
-                            AvatarUrl = "",
-                            CreatedDate = new DateTime(2026, 7, 16, 15, 45, 47, 698, DateTimeKind.Utc).AddTicks(6494),
-                            Email = "string",
-                            EmailConfirmed = false,
-                            FirstName = "System",
-                            IsActive = true,
-                            LastName = "Admin",
-                            PasswordHash = "string",
-                            Phone = "",
-                            Role = 0
-                        });
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Warehouse", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.Property<Guid?>("ManagerId")
                         .HasColumnType("uuid");
@@ -666,6 +334,9 @@ namespace MultiWarehouse.Service.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("OperationalStatus")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -684,7 +355,7 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("Warehouses");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.WarehouseZone", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.WarehouseZone", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -716,9 +387,802 @@ namespace MultiWarehouse.Service.Migrations
                     b.ToTable("WarehouseZones");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.AuditLog", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.InboundOrder", b =>
                 {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CancelledById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MovementType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SourceTransferOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedById");
+
+                    b.HasIndex("CancelledById");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DocumentNumber")
+                        .IsUnique();
+
+                    b.HasIndex("SourceTransferOrderId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("InboundOrders");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.InboundOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ExpectedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("InboundOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReceivedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InboundOrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("InboundOrderLines");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CancelledById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MovementType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedById");
+
+                    b.HasIndex("CancelledById");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DocumentNumber")
+                        .IsUnique();
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("OutboundOrders");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OutboundOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PickedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RequestedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutboundOrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OutboundOrderLines");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrderReservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OutboundOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReservedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutboundOrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShelfId");
+
+                    b.ToTable("OutboundOrderReservations");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CancelledById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("DispatchedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DocumentNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ReceivedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SourceWarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TargetWarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CancelledById");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DispatchedById");
+
+                    b.HasIndex("DocumentNumber")
+                        .IsUnique();
+
+                    b.HasIndex("ReceivedById");
+
+                    b.HasIndex("SourceWarehouseId");
+
+                    b.HasIndex("TargetWarehouseId");
+
+                    b.ToTable("TransferOrders");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DispatchedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ExpectedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReceivedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TransferOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TransferOrderId");
+
+                    b.ToTable("TransferOrderLines");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrderReservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReservedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SourceShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TransferOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SourceShelfId");
+
+                    b.HasIndex("TransferOrderId");
+
+                    b.ToTable("TransferOrderReservations");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.PasswordResetToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Browser")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeviceName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastAccessed")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("RevokedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmailChangeToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailChangeTokenExpires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PendingNewEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("ReceiveEmailNotifications")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ReceiveInAppNotifications")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.InventoryCount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CountedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SystemQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Variance")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShelfId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("InventoryCounts");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.InventoryCountDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CountedQty")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ExpectedQty")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("InventoryCountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryCountId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShelfId");
+
+                    b.ToTable("InventoryCountDetails");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.Stock", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastMovementDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReservedQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShelfId");
+
+                    b.HasIndex("WarehouseId", "ProductId", "ShelfId")
+                        .IsUnique();
+
+                    b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.StockMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MovementType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ShelfId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShelfId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("StockMovements");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Notification.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("TargetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Common.AuditLog", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -727,40 +1191,355 @@ namespace MultiWarehouse.Service.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.InventoryCount", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Product", b =>
                 {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Supplier", "Supplier")
+                        .WithMany("Products")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Shelf", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.WarehouseZone", "WarehouseZone")
+                        .WithMany("Shelves")
+                        .HasForeignKey("WarehouseZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.Warehouse", "Warehouse")
-                        .WithMany()
+                    b.Navigation("WarehouseZone");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Warehouse", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "Manager")
+                        .WithMany("ManagedWarehouses")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.WarehouseZone", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany("WarehouseZones")
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.InboundOrder", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CancelledBy")
+                        .WithMany()
+                        .HasForeignKey("CancelledById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.TransferOrder", "SourceTransferOrder")
+                        .WithMany()
+                        .HasForeignKey("SourceTransferOrderId");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("CancelledBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("SourceTransferOrder");
+
+                    b.Navigation("Supplier");
 
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.InventoryCountDetail", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.InboundOrderLine", b =>
                 {
-                    b.HasOne("MultiWarehouse.Entity.Entities.InventoryCount", "InventoryCount")
-                        .WithMany("CountDetails")
-                        .HasForeignKey("InventoryCountId")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.InboundOrder", "InboundOrder")
+                        .WithMany("Lines")
+                        .HasForeignKey("InboundOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.Product", "Product")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.Shelf", "Shelf")
+                    b.Navigation("InboundOrder");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrder", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CancelledBy")
+                        .WithMany()
+                        .HasForeignKey("CancelledById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("CancelledBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrderLine", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.OutboundOrder", "OutboundOrder")
+                        .WithMany("Lines")
+                        .HasForeignKey("OutboundOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OutboundOrder");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrderReservation", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.OutboundOrder", "OutboundOrder")
+                        .WithMany("Reservations")
+                        .HasForeignKey("OutboundOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "Shelf")
+                        .WithMany()
+                        .HasForeignKey("ShelfId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OutboundOrder");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shelf");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrder", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CancelledBy")
+                        .WithMany()
+                        .HasForeignKey("CancelledById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "DispatchedBy")
+                        .WithMany()
+                        .HasForeignKey("DispatchedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "ReceivedBy")
+                        .WithMany()
+                        .HasForeignKey("ReceivedById");
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "SourceWarehouse")
+                        .WithMany()
+                        .HasForeignKey("SourceWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "TargetWarehouse")
+                        .WithMany()
+                        .HasForeignKey("TargetWarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CancelledBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("DispatchedBy");
+
+                    b.Navigation("ReceivedBy");
+
+                    b.Navigation("SourceWarehouse");
+
+                    b.Navigation("TargetWarehouse");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrderLine", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.TransferOrder", "TransferOrder")
+                        .WithMany("Lines")
+                        .HasForeignKey("TransferOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("TransferOrder");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrderReservation", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "SourceShelf")
+                        .WithMany()
+                        .HasForeignKey("SourceShelfId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Documents.TransferOrder", "TransferOrder")
+                        .WithMany("Reservations")
+                        .HasForeignKey("TransferOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("SourceShelf");
+
+                    b.Navigation("TransferOrder");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.PasswordResetToken", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "User")
+                        .WithMany("PasswordResetTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.RefreshToken", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.User", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.InventoryCount", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "Shelf")
+                        .WithMany()
+                        .HasForeignKey("ShelfId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shelf");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.InventoryCountDetail", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Inventory.InventoryCount", "InventoryCount")
+                        .WithMany()
+                        .HasForeignKey("InventoryCountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "Shelf")
                         .WithMany()
                         .HasForeignKey("ShelfId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -773,84 +1552,21 @@ namespace MultiWarehouse.Service.Migrations
                     b.Navigation("Shelf");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Notification", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.Stock", b =>
                 {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.PasswordResetToken", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
-                        .WithMany("PasswordResetTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Product", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MultiWarehouse.Entity.Entities.Supplier", "Supplier")
-                        .WithMany("Products")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Shelf", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.WarehouseZone", "WarehouseZone")
-                        .WithMany("Shelves")
-                        .HasForeignKey("WarehouseZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WarehouseZone");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Stock", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.Product", "Product")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
                         .WithMany("Stocks")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.Shelf", "Shelf")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "Shelf")
                         .WithMany()
                         .HasForeignKey("ShelfId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.Warehouse", "Warehouse")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -863,83 +1579,103 @@ namespace MultiWarehouse.Service.Migrations
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.StockMovement", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Inventory.StockMovement", b =>
                 {
-                    b.HasOne("MultiWarehouse.Entity.Entities.Product", "Product")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "User")
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Shelf", "Shelf")
+                        .WithMany()
+                        .HasForeignKey("ShelfId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MultiWarehouse.Entity.Entities.Definitions.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Product");
 
+                    b.Navigation("Shelf");
+
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Warehouse", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.User", "Manager")
-                        .WithMany("ManagedWarehouses")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Manager");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.WarehouseZone", b =>
-                {
-                    b.HasOne("MultiWarehouse.Entity.Entities.Warehouse", "Warehouse")
-                        .WithMany("WarehouseZones")
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Category", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Notification.Notification", b =>
+                {
+                    b.HasOne("MultiWarehouse.Entity.Entities.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.InventoryCount", b =>
-                {
-                    b.Navigation("CountDetails");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Product", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Product", b =>
                 {
                     b.Navigation("Stocks");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Supplier", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Supplier", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.User", b =>
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.Warehouse", b =>
+                {
+                    b.Navigation("WarehouseZones");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Definitions.WarehouseZone", b =>
+                {
+                    b.Navigation("Shelves");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.InboundOrder", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.OutboundOrder", b =>
+                {
+                    b.Navigation("Lines");
+
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Documents.TransferOrder", b =>
+                {
+                    b.Navigation("Lines");
+
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Identity.User", b =>
                 {
                     b.Navigation("ManagedWarehouses");
 
                     b.Navigation("PasswordResetTokens");
 
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.Warehouse", b =>
-                {
-                    b.Navigation("WarehouseZones");
-                });
-
-            modelBuilder.Entity("MultiWarehouse.Entity.Entities.WarehouseZone", b =>
-                {
-                    b.Navigation("Shelves");
                 });
 #pragma warning restore 612, 618
         }

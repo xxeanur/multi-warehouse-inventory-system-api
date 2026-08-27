@@ -1,9 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.Common;
 
 namespace MultiWarehouse.Shared.DTOs.NotificationDtos
 {
@@ -15,8 +10,9 @@ namespace MultiWarehouse.Shared.DTOs.NotificationDtos
         public string Message { get; set; } = string.Empty;
         public bool IsRead { get; set; }
         public NotificationType Type { get; set; }
-        public string Url { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public bool IsActive { get; set; }
+        public NotificationTargetType TargetType { get; set; }
+        public Guid? TargetId { get; set; }
     }
 }

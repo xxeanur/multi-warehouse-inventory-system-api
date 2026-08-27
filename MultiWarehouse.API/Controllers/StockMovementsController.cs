@@ -1,111 +1,80 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultiWarehouse.Service.Services.Interfaces;
+using MultiWarehouse.Service.Services.Interfaces.Inventory;
 using MultiWarehouse.Shared.DTOs;
+using MultiWarehouse.Shared.DTOs.InventoryDtos;
 using MultiWarehouse.Shared.DTOs.StockMovementDtos;
 using MultiWarehouse.Shared.Pagination;
 
 namespace MultiWarehouse.API.Controllers
 {
     /// <summary>
-    /// Depo içerisindeki veya dışarısındaki tüm mal hareketlerinin kayıt altına alındığı API.
+    /// Stok hareket defterini sorgulayan read-only API.s
     /// </summary>
-    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "SuperAdmin,WarehouseManager")]
     public class StockMovementsController : ControllerBase
     {
-        private readonly IStockMovementService _movementService;
+        private readonly IStockMovementService _stockMovementService;
 
-        public StockMovementsController(IStockMovementService movementService)
+        public StockMovementsController(IStockMovementService stockMovementService)
         {
-            _movementService = movementService;
+            _stockMovementService = stockMovementService;
         }
 
-        /// <summary>Yeni bir stok hareketi (Giriş, Çıkış, Transfer) kaydeder.</summary>
-        [HttpPost]
-        public async Task<IActionResult> Create(StockMovementCreateDto createDto)
-        {
-            var movement = await _movementService.CreateAsync(createDto);
-            return Ok(CustomResponseDto<StockMovementDto>.SuccessResponse(movement));
-        }
+        #region Read Operations
 
-        /// <summary>Belirtilen ID'ye sahip hareket detayını getirir.</summary>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var movement = await _movementService.GetByIdAsync(id);
-            return Ok(CustomResponseDto<StockMovementDto>.SuccessResponse(movement));
-        }
-
-        /// <summary>Sistemdeki tüm stok hareket geçmişini (Ledger) getirir.</summary>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var movements = await _movementService.GetAllAsync();
-            return Ok(CustomResponseDto<IEnumerable<StockMovementDto>>.SuccessResponse(movements));
-        }
-
-        /// <summary>Spesifik bir ürüne ait tüm hareketleri listeler.</summary>
-        [HttpGet("GetByProductId/{productId}")]
-        public async Task<IActionResult> GetByProductId(Guid productId)
-        {
-            var movements = await _movementService.GetAllByProductIdAsync(productId);
-            return Ok(CustomResponseDto<IEnumerable<StockMovementDto>>.SuccessResponse(movements));
-        }
-
-        /// <summary>Spesifik bir depoya giren veya çıkan tüm hareketleri listeler.</summary>
-        [HttpGet("GetByWarehouseId/{warehouseId}")]
-        public async Task<IActionResult> GetByWarehouseId(Guid warehouseId)
-        {
-            var movements = await _movementService.GetAllByWarehouseIdAsync(warehouseId);
-            return Ok(CustomResponseDto<IEnumerable<StockMovementDto>>.SuccessResponse(movements));
-        }
-        //pagination
         /// <summary>
-        /// Sistemdeki tüm stok hareketlerini (Tarihçe) sayfalama destekli olarak getirir.
+        /// Filtrelere göre stok hareketlerini sayfalamalı getirir.
         /// </summary>
-        [HttpGet("Paged")]
-        public async Task<IActionResult> GetPaged([FromQuery] PaginationParams paginationParams)
+        [HttpGet("Filtered")]
+        public async Task<IActionResult> GetFilteredPaged([FromQuery] StockMovementFilterDto filterDto, [FromQuery] PaginationParams paginationParams)
         {
-            var pagedMovements = await _movementService.GetPagedAsync(paginationParams);
-            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
+            var result = await _stockMovementService.GetFilteredPagedAsync(filterDto, paginationParams);
+            return Ok(CustomResponseDto<PagedResult<StockMovementListDto>>.SuccessResponse(result));
         }
 
         /// <summary>
-        /// Sadece belirtilen ürüne ait hareket tarihçesini sayfalayarak getirir.
+        /// Stok hareket detayını getirir.
         /// </summary>
-        [HttpGet("PagedByProduct/{productId}")]
-        public async Task<IActionResult> GetPagedByProduct([FromQuery] PaginationParams paginationParams, Guid productId)
+        [HttpGet("{id}/detail")]
+        public async Task<IActionResult> GetDetailById(Guid id)
         {
-            var pagedMovements = await _movementService.GetPagedByProductIdAsync(paginationParams, productId);
-            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
+            var result = await _stockMovementService.GetDetailByIdAsync(id);
+            return Ok(CustomResponseDto<StockMovementDetailDto>.SuccessResponse(result));
         }
 
         /// <summary>
-        /// Sadece belirtilen depoda gerçekleşen (giriş/çıkış) hareketleri sayfalayarak getirir.
+        /// Ürüne ait hareket geçmişini sayfalamalı listeler.
         /// </summary>
-        [HttpGet("PagedByWarehouse/{warehouseId}")]
-        public async Task<IActionResult> GetPagedByWarehouse([FromQuery] PaginationParams paginationParams, Guid warehouseId)
+        [HttpGet("Product/{productId}")]
+        public async Task<IActionResult> GetByProduct(Guid productId, [FromQuery] PaginationParams paginationParams)
         {
-            var pagedMovements = await _movementService.GetPagedByWarehouseIdAsync(paginationParams, warehouseId);
-            return Ok(CustomResponseDto<PagedResult<StockMovementDto>>.SuccessResponse(pagedMovements));
+            var result = await _stockMovementService.GetByProductIdAsync(productId, paginationParams);
+            return Ok(CustomResponseDto<PagedResult<StockMovementListDto>>.SuccessResponse(result));
         }
 
-        /// <summary>Mevcut bir hareketin durumunu, açıklamasını veya referans numarasını günceller. (Miktar güncellenemez!)</summary>
-        [HttpPut]
-        public async Task<IActionResult> Update(StockMovementUpdateDto updateDto)
+        /// <summary>
+        /// Rafa yapılmış hareket geçmişini sayfalamalı listeler.
+        /// </summary>
+        [HttpGet("Shelf/{shelfId}")]
+        public async Task<IActionResult> GetByShelf(Guid shelfId, [FromQuery] PaginationParams paginationParams)
         {
-            var movement = await _movementService.UpdateAsync(updateDto);
-            return Ok(CustomResponseDto<StockMovementDto>.SuccessResponse(movement));
+            var result = await _stockMovementService.GetByShelfIdAsync(shelfId, paginationParams);
+            return Ok(CustomResponseDto<PagedResult<StockMovementListDto>>.SuccessResponse(result));
         }
 
-        /// <summary>Stok hareketini sistemden pasife çeker.</summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Remove(Guid id)
+        /// <summary>
+        /// Belgeye bağlı hareketleri sayfalamalı listeler.
+        /// </summary>
+        [HttpGet("Document/{documentId}")]
+        public async Task<IActionResult> GetByDocument(Guid documentId, [FromQuery] PaginationParams paginationParams)
         {
-            await _movementService.RemoveAsync(id);
-            return Ok(CustomResponseDto.SuccessResponse());
+            var result = await _stockMovementService.GetByDocumentIdAsync(documentId, paginationParams);
+            return Ok(CustomResponseDto<PagedResult<StockMovementListDto>>.SuccessResponse(result));
         }
+
+        #endregion
     }
 }

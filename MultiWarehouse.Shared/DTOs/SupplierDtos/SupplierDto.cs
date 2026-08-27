@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MultiWarehouse.Shared.DTOs.SupplierDtos
+﻿namespace MultiWarehouse.Shared.DTOs.SupplierDtos
 {
     public class SupplierDto
     {
@@ -13,7 +7,12 @@ namespace MultiWarehouse.Shared.DTOs.SupplierDtos
         public string ContactName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
+        public string Country { get; set; } = "Türkiye";
+        public string City { get; set; } = string.Empty;
+        public string District { get; set; } = string.Empty;
+        public string FullAddress { get; set; } = string.Empty;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public string TaxNumber { get; set; } = string.Empty;
         public string TaxOffice { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }

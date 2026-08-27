@@ -1,9 +1,4 @@
-﻿using MultiWarehouse.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MultiWarehouse.Entity.Enums.Product;
 
 namespace MultiWarehouse.Shared.DTOs.ProductDtos
 {
@@ -19,7 +14,6 @@ namespace MultiWarehouse.Shared.DTOs.ProductDtos
         public double Weight { get; set; }
         public string Barcode { get; set; } = string.Empty;
 
-        // GÜNCELLENDİ (Varsayılan olarak Piece seçili)
         public UnitType Unit { get; set; } = UnitType.Piece;
 
         public decimal UnitPrice { get; set; }
